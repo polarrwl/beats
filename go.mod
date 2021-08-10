@@ -25,6 +25,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20170221213301-9f32b5905fd6
 	github.com/aerospike/aerospike-client-go v1.27.1-0.20170612174108-0f3b54da6bdc
 	github.com/akavel/rsrc v0.8.0 // indirect
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1214 // indirect
 	github.com/andrewkroh/sys v0.0.0-20151128191922-287798fe3e43
 	github.com/antlr/antlr4 v0.0.0-20200820155224-be881fa6b91d
 	github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 // indirect
@@ -126,6 +127,7 @@ require (
 	github.com/mitchellh/hashstructure v0.0.0-20170116052023-ab25296c0f51
 	github.com/mitchellh/mapstructure v1.3.3
 	github.com/morikuni/aec v1.0.0 // indirect
+	github.com/nacos-group/nacos-sdk-go v1.0.8
 	github.com/oklog/ulid v1.3.1
 	github.com/opencontainers/go-digest v1.0.0-rc1.0.20190228220655-ac19fd6e7483 // indirect
 	github.com/opencontainers/image-spec v1.0.2-0.20190823105129-775207bd45b6 // indirect
@@ -162,9 +164,9 @@ require (
 	go.elastic.co/ecszap v0.3.0
 	go.elastic.co/go-licence-detector v0.4.0
 	go.etcd.io/bbolt v1.3.4
-	go.uber.org/atomic v1.5.0
-	go.uber.org/multierr v1.3.0
-	go.uber.org/zap v1.14.0
+	go.uber.org/atomic v1.6.0
+	go.uber.org/multierr v1.5.0
+	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 	golang.org/x/lint v0.0.0-20200130185559-910be7a94367
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110

@@ -1,0 +1,8 @@
+# Nacos配置
+enable: true
+applicationName: "filebeat"
+server: "192.168.1.200"
+port: 8848
+httpstart: true
+httpport: 5715
+clientip: #nacos支持配置指定的本机ip注册地址

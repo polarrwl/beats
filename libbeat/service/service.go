@@ -22,6 +22,7 @@ import (
 	"expvar"
 	"flag"
 	"fmt"
+	filebeat_nacos "github.com/elastic/beats/v7/filebeat/nacos"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
@@ -73,13 +74,14 @@ func NotifyTermination() {
 }
 
 // cmdline flags
-var memprofile, cpuprofile, httpprof *string
+var memprofile, cpuprofile, httpprof, nacosconf *string
 var cpuOut *os.File
 
 func init() {
 	memprofile = flag.String("memprofile", "", "Write memory profile to this file")
 	cpuprofile = flag.String("cpuprofile", "", "Write cpu profile to file")
 	httpprof = flag.String("httpprof", "", "Start pprof http server")
+	nacosconf = flag.String("nc", "nacos.yml", "nacosconfig")
 }
 
 // ProfileEnabled checks whether the beat should write a cpu or memory profile.
@@ -103,33 +105,49 @@ func BeforeRun() {
 		pprof.StartCPUProfile(cpuOut)
 	}
 
+	if nacosconf != nil {
+		//启动nacos
+		nacosConfig := filebeat_nacos.InitConfig(*nacosconf)
+		nacosModule := filebeat_nacos.NacosModule{}
+		if nacosConfig.Enable == true {
+			go func() {
+				nacosModule.InitModule(nacosConfig)
+			}()
+		}
+
+	}
+
 	if *httpprof == "" {
-		return
+		logger.Info("不启动httprof")
+	} else {
+		logger.Info("Start pprof endpoint")
+		mux := http.NewServeMux()
+
+		// Register pprof handler
+		mux.HandleFunc("/debug/pprof/", func(w http.ResponseWriter, r *http.Request) {
+			http.DefaultServeMux.ServeHTTP(w, r)
+		})
+
+		// Register metrics handler
+		mux.HandleFunc("/debug/vars", metricsHandler)
+
+		// Ensure we are listening before returning
+		listener, err := net.Listen("tcp", *httpprof)
+		if err != nil {
+			logger.Errorf("Failed to start pprof listener: %v", err)
+			os.Exit(1)
+		}
+
+		go func() {
+			// Serve returns always a non-nil error
+			err := http.Serve(listener, mux)
+			logger.Infof("Finished pprof endpoint: %v", err)
+		}()
 	}
 
-	logger.Info("Start pprof endpoint")
-	mux := http.NewServeMux()
 
-	// Register pprof handler
-	mux.HandleFunc("/debug/pprof/", func(w http.ResponseWriter, r *http.Request) {
-		http.DefaultServeMux.ServeHTTP(w, r)
-	})
 
-	// Register metrics handler
-	mux.HandleFunc("/debug/vars", metricsHandler)
 
-	// Ensure we are listening before returning
-	listener, err := net.Listen("tcp", *httpprof)
-	if err != nil {
-		logger.Errorf("Failed to start pprof listener: %v", err)
-		os.Exit(1)
-	}
-
-	go func() {
-		// Serve returns always a non-nil error
-		err := http.Serve(listener, mux)
-		logger.Infof("Finished pprof endpoint: %v", err)
-	}()
 }
 
 // metricsHandler reports expvar and all libbeat/monitoring metrics

@@ -28,6 +28,7 @@ var (
 	configPath      string
 	configFilePath  string
 	logsPath        string
+	nacosConfig		string
 	unversionedHome bool
 	tmpCreator      sync.Once
 )
